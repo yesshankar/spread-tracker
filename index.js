@@ -60,7 +60,7 @@ function startWebSocketConnection(product_ids) {
 
     if (document.visibilityState === "visible") {
       console.log("Abrupt disconnection occured!! Reconnecting Websocket..");
-      startWebSocketConnection();
+      startWebSocketConnection(app.product_ids);
     }
   });
 }
@@ -70,7 +70,7 @@ function startWebSocketConnection(product_ids) {
 document.addEventListener("visibilitychange", function() {
   if (document.visibilityState === "visible" && !isSocketConnected) {
     console.log("Reconnecting Websocket... @ " + new Date().toLocaleString());
-    startWebSocketConnection();
+    startWebSocketConnection(app.product_ids);
   } else if (document.visibilityState === "visible" && !subscribed) {
     subscribe(app.product_ids, ["ticker"]);
     subscribed = true;
