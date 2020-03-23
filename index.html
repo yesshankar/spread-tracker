@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spread Tracker</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="tbl">
+        <div class="tbl-header">
+          <span>Product</span> <span>Spread %</span> <span>Best Bid</span>
+          <span>Best Ask</span>
+        </div>
+        <transition-group name="list" tag="div">
+          <div class="tbl-item" v-for="product_id in spread" :key="product_id">
+            <span>{{ product_id }}</span>
+            <span>{{ products[product_id].spread }} %</span>
+            <span>{{ products[product_id].best_bid }}</span>
+            <span>{{ products[product_id].best_ask }}</span>
+          </div>
+        </transition-group>
+      </div>
+    </div>
+    <div id="connection-status">&#9608;</div>
+
+    <!-- development version, includes helpful console warnings -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+
+    <!-- production version, optimized for size and speed -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <script src="spread.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+.tbl-header {
+  font-weight: bold;
+  background-color: rgb(38, 166, 154);
+}
+
+.tbl-item:nth-child(even) {
+  background-color: rgb(221, 242, 240);
+}
+
+.tbl-item:hover {
+  background-color: turquoise;
+}
+
+.tbl-item,
+.tbl-header {
+  box-sizing: border-box;
+  padding: 3px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+#connection-status {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+}
+
+.list-move {
+  transition: transform 1s;
+}
+
+@media only screen and (min-width: 900px) {
+  #tbl {
+    width: 60%;
+    margin: 0 auto;
+  }
+}
