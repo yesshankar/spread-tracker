@@ -16,7 +16,7 @@
   box-sizing: border-box;
   padding: 3px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 }
 
 #connection-status {
@@ -27,6 +27,18 @@
 
 .list-move {
   transition: transform 1s;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.center {
+  text-align: center;
+}
+
+.teal {
+  color: teal;
 }
 
 @media only screen and (min-width: 900px) {

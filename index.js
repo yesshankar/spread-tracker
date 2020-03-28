@@ -7,7 +7,7 @@ async function fetchProductsAndSubscribe() {
     let obj = {};
 
     for (const product_id of product_ids) {
-      obj[product_id] = { best_bid: 0, best_ask: 0, spread: 0 };
+      obj[product_id] = { best_bid: 0, best_ask: 0, spread: 0, volatility: 0 };
     }
 
     app.products = obj;
@@ -105,11 +105,16 @@ function unsubscribe(product_ids, channels) {
 function updateData(data) {
   let best_bid = parseFloat(data.best_bid);
   let best_ask = parseFloat(data.best_ask);
+  let low_24h = parseFloat(data.low_24h);
+  let high_24h = parseFloat(data.high_24h);
+
   let spread = (((best_ask - best_bid) / best_bid) * 100).toFixed(2);
+  let volatility = (((high_24h - low_24h) / low_24h) * 100).toFixed(2);
 
   app.products[data.product_id].best_bid = best_bid;
   app.products[data.product_id].best_ask = best_ask;
   app.products[data.product_id].spread = spread;
+  app.products[data.product_id].volatility = volatility;
 }
 
 function updateConnectionStatus(con) {

@@ -8,17 +8,35 @@
   </head>
   <body>
     <div id="app">
+      <h1 class="center">
+        <span class="teal">Realtime Spread</span class="teal"> & <span class="teal">Volatility in 24 hour</span class="teal"> of
+        Coinbase Pro assets
+      </h1>
       <div id="tbl">
         <div class="tbl-header">
-          <span>Product</span> <span>Spread %</span> <span>Best Bid</span>
-          <span>Best Ask</span>
+          <span class="pointer" @click="changeSortBy('name')"
+            >Product <span v-if="sort_by == 'name'">&#x21E9;</span></span
+          >
+          <span class="pointer" @click="changeSortBy('spread')"
+            >Spread <span v-if="sort_by == 'spread'">&#x21E9;</span></span
+          >
+          <span>Best Bid</span> <span>Best Ask</span>
+          <span class="pointer" @click="changeSortBy('volatility')"
+            >Volatility
+            <span v-if="sort_by == 'volatility'">&#x21E9;</span></span
+          >
         </div>
         <transition-group name="list" tag="div">
-          <div class="tbl-item" v-for="product_id in spread" :key="product_id">
+          <div
+            class="tbl-item"
+            v-for="product_id in product_ids"
+            :key="product_id"
+          >
             <span>{{ product_id }}</span>
             <span>{{ products[product_id].spread }} %</span>
             <span>{{ products[product_id].best_bid }}</span>
             <span>{{ products[product_id].best_ask }}</span>
+            <span>{{ products[product_id].volatility }} %</span>
           </div>
         </transition-group>
       </div>
