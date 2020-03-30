@@ -25,6 +25,10 @@
   bottom: 0;
 }
 
+.tbl-item span {
+  padding: 5px;
+}
+
 .list-move {
   transition: transform 1s;
 }
@@ -45,5 +49,15 @@
   #tbl {
     width: 60%;
     margin: 0 auto;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  body {
+    font-size: 3vw;
+  }
+
+  h1 {
+    font-size: 6vw;
   }
 }
