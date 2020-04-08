@@ -2,12 +2,18 @@ async function fetchProductsAndSubscribe() {
   try {
     let response = await fetch("https://api.pro.coinbase.com/products");
     let data = await response.json();
-    let product_ids = data.map(item => item.id);
+    let product_ids = data.map((item) => item.id);
 
     let obj = {};
 
     for (const product_id of product_ids) {
-      obj[product_id] = { best_bid: 0, best_ask: 0, spread: 0, volatility: 0 };
+      obj[product_id] = {
+        best_bid: 0,
+        best_ask: 0,
+        spread: 0,
+        volatility: 0,
+        polarity: 0,
+      };
     }
 
     app.products = obj;
@@ -32,19 +38,19 @@ function startWebSocketConnection(product_ids) {
     channels: [
       {
         name: "ticker",
-        product_ids
-      }
-    ]
+        product_ids,
+      },
+    ],
   };
 
-  socket.addEventListener("open", event => {
+  socket.addEventListener("open", (event) => {
     isSocketConnected = true;
     socket.send(JSON.stringify(subscribeMsg));
     subscribed = true;
     updateConnectionStatus("connected");
   });
 
-  socket.addEventListener("message", event => {
+  socket.addEventListener("message", (event) => {
     let data = JSON.parse(event.data);
 
     if (data.type == "ticker") {
@@ -52,7 +58,7 @@ function startWebSocketConnection(product_ids) {
     }
   });
 
-  socket.addEventListener("close", event => {
+  socket.addEventListener("close", (event) => {
     updateConnectionStatus("disconnected");
     isSocketConnected = false;
     subscribed = false;
@@ -67,7 +73,7 @@ function startWebSocketConnection(product_ids) {
 
 //######################### End Socket Connection #############################
 
-document.addEventListener("visibilitychange", function() {
+document.addEventListener("visibilitychange", function () {
   if (document.visibilityState === "visible" && !isSocketConnected) {
     console.log("Reconnecting Websocket... @ " + new Date().toLocaleString());
     startWebSocketConnection(app.product_ids);
@@ -86,7 +92,7 @@ function subscribe(product_ids, channels) {
   let subscribeMsg = {
     type: "subscribe",
     product_ids,
-    channels
+    channels,
   };
 
   socket.send(JSON.stringify(subscribeMsg));
@@ -96,7 +102,7 @@ function unsubscribe(product_ids, channels) {
   let subscribeMsg = {
     type: "unsubscribe",
     product_ids,
-    channels
+    channels,
   };
 
   socket.send(JSON.stringify(subscribeMsg));
@@ -107,14 +113,21 @@ function updateData(data) {
   let best_ask = parseFloat(data.best_ask);
   let low_24h = parseFloat(data.low_24h);
   let high_24h = parseFloat(data.high_24h);
+  let price = parseFloat(data.price);
 
   let spread = (((best_ask - best_bid) / best_bid) * 100).toFixed(2);
   let volatility = (((high_24h - low_24h) / low_24h) * 100).toFixed(2);
+  let midPrice = (high_24h - low_24h) / 2;
+  let midRange = high_24h - midPrice;
 
   app.products[data.product_id].best_bid = best_bid;
   app.products[data.product_id].best_ask = best_ask;
   app.products[data.product_id].spread = spread;
   app.products[data.product_id].volatility = volatility;
+  app.products[data.product_id].polarity = (
+    ((price - midPrice) / midRange) *
+    100
+  ).toFixed(2);
 }
 
 function updateConnectionStatus(con) {

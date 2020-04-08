@@ -1,3 +1,7 @@
+#tbl {
+  overflow-x: auto;
+}
+
 .tbl-header {
   font-weight: bold;
   background-color: rgb(38, 166, 154);
@@ -16,7 +20,7 @@
   box-sizing: border-box;
   padding: 3px;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, minmax(100px, 1fr));
 }
 
 #connection-status {
@@ -45,19 +49,27 @@
   color: teal;
 }
 
+.red {
+  color: red;
+}
+
+.green {
+  color: green;
+}
+
 @media only screen and (min-width: 900px) {
   #tbl {
-    width: 60%;
+    width: 70%;
     margin: 0 auto;
   }
 }
 
 @media only screen and (max-width: 500px) {
   body {
-    font-size: 3vw;
+    font-size: 0.75em;
   }
 
   h1 {
-    font-size: 6vw;
+    font-size: 1.5em;
   }
 }

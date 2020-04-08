@@ -9,22 +9,41 @@
   <body>
     <div id="app">
       <h1 class="center">
-        <span class="teal">Realtime Spread</span class="teal"> & <span class="teal">Volatility in 24 hour</span class="teal"> of
-        Coinbase Pro assets
+        <span class="teal">Realtime Spread</span> &
+        <span class="teal">Volatility in 24 hour</span> of Coinbase Pro assets
       </h1>
       <div id="tbl">
         <div class="tbl-header">
-          <span class="pointer" @click="changeSortBy('name')"
+          <span
+            class="pointer"
+            @click="changeSortBy('name')"
+            title="Click to sort by Product Name."
             >Product <span v-if="sort_by == 'name'">&#x21E9;</span></span
           >
-          <span class="pointer" @click="changeSortBy('spread')"
+          <span
+            class="pointer"
+            @click="changeSortBy('spread')"
+            title="Gap between best bid and best ask in percentage. Click to sort by Spread."
             >Spread <span v-if="sort_by == 'spread'">&#x21E9;</span></span
           >
-          <span>Best Bid</span> <span>Best Ask</span>
-          <span class="pointer" @click="changeSortBy('volatility')"
+          <span>Best Bid</span>
+          <span
+            class="pointer"
+            @click="changeSortBy('volatility')"
+            title="24hr low to 24hr high in percentage. Click to sort by Volatility."
             >Volatility
-            <span v-if="sort_by == 'volatility'">&#x21E9;</span></span
-          >
+            <span v-if="sort_by == 'volatility'">&#x21E9;</span>
+          </span>
+
+          <span>Best Ask</span>
+
+          <span
+            class="pointer"
+            @click="changeSortBy('polarity')"
+            title="How far the current price is from mid of 24hr high and low in percentage. Click to sort by Polarity."
+            >Polarity
+            <span v-if="sort_by == 'polarity'">&#x21E9;</span>
+          </span>
         </div>
         <transition-group name="list" tag="div">
           <div
@@ -35,8 +54,11 @@
             <span>{{ product_id }}</span>
             <span>{{ products[product_id].spread }} %</span>
             <span>{{ products[product_id].best_bid }}</span>
-            <span>{{ products[product_id].best_ask }}</span>
             <span>{{ products[product_id].volatility }} %</span>
+            <span>{{ products[product_id].best_ask }}</span>
+            <span :class="poleSide(products[product_id].polarity)"
+              >{{ products[product_id].polarity }} %</span
+            >
           </div>
         </transition-group>
       </div>
