@@ -117,7 +117,7 @@ function updateData(data) {
 
   let spread = (((best_ask - best_bid) / best_bid) * 100).toFixed(2);
   let volatility = (((high_24h - low_24h) / low_24h) * 100).toFixed(2);
-  let midPrice = (high_24h - low_24h) / 2;
+  let midPrice = (high_24h + low_24h) / 2;
   let midRange = high_24h - midPrice;
 
   app.products[data.product_id].best_bid = best_bid;
