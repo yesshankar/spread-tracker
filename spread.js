@@ -52,5 +52,14 @@ var app = new Vue({
         }
       }
     },
+    toggleAll: function () {
+      for (const key in this.checkedAssets) {
+        if (!this.checkedAssets[key] && key != "ALL") {
+          this.checkedAssets.ALL = false;
+          return;
+        }
+      }
+      this.checkedAssets.ALL = true;
+    },
   },
 });
