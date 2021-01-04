@@ -17,6 +17,7 @@ async function fetchProductsAndSubscribe() {
     }
 
     app.products = obj;
+    app.holdedProducts = Object.assign({}, obj);
 
     startWebSocketConnection(product_ids);
   } catch (e) {
@@ -48,13 +49,21 @@ function startWebSocketConnection(product_ids) {
     socket.send(JSON.stringify(subscribeMsg));
     subscribed = true;
     updateConnectionStatus("connected");
+    setTimeout(() => {
+      app.ignoreNewData = true;
+    }, 500);
+    setTimeout(() => {
+      app.ignoreNewData = false;
+    }, 5000);
   });
 
   socket.addEventListener("message", (event) => {
     let data = JSON.parse(event.data);
 
     if (data.type == "ticker") {
-      updateData(data);
+      if (!app.ignoreNewData) {
+        updateData(data);
+      }
     }
   });
 
@@ -120,14 +129,19 @@ function updateData(data) {
   let midPrice = (high_24h + low_24h) / 2;
   let midRange = high_24h - midPrice;
 
-  app.products[data.product_id].best_bid = best_bid;
-  app.products[data.product_id].best_ask = best_ask;
-  app.products[data.product_id].spread = spread;
-  app.products[data.product_id].volatility = volatility;
-  app.products[data.product_id].polarity = (
-    ((price - midPrice) / midRange) *
-    100
-  ).toFixed(2);
+  let tempObj = {};
+
+  tempObj.best_bid = best_bid;
+  tempObj.best_ask = best_ask;
+  tempObj.spread = spread;
+  tempObj.volatility = volatility;
+  tempObj.polarity = (((price - midPrice) / midRange) * 100).toFixed(2);
+
+  app.holdedProducts[data.product_id] = Object.assign(
+    {},
+    app.holdedProducts[data.product_id],
+    tempObj
+  );
 }
 
 function updateConnectionStatus(con) {

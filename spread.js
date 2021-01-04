@@ -2,16 +2,18 @@ var app = new Vue({
   el: "#app",
   data: {
     products: {},
+    holdedProducts: {},
+    ignoreNewData: false,
     sort_by: "spread",
     checkedAssets: {
-      ALL: true,
+      ALL: false,
       USD: true,
       USDC: true,
-      BTC: true,
-      EUR: true,
-      GBP: true,
-      DAI: true,
-      ETH: true,
+      BTC: false,
+      EUR: false,
+      GBP: false,
+      DAI: false,
+      ETH: false,
     },
   },
   computed: {
@@ -61,5 +63,10 @@ var app = new Vue({
       }
       this.checkedAssets.ALL = true;
     },
+  },
+  mounted: function () {
+    setInterval(() => {
+      this.products = Object.assign({}, this.holdedProducts);
+    }, 2000);
   },
 });
