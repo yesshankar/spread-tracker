@@ -30,6 +30,8 @@ async function fetchProductsAndSubscribe() {
 let socket;
 let isSocketConnected = false;
 let subscribed = false;
+let unsubscribeTimeout = null;
+let aboutToUnsubscribe = false;
 
 function startWebSocketConnection(product_ids) {
   socket = new WebSocket("wss://ws-feed.pro.coinbase.com");
@@ -83,17 +85,28 @@ function startWebSocketConnection(product_ids) {
 //######################### End Socket Connection #############################
 
 document.addEventListener("visibilitychange", function () {
+  if (document.visibilityState === "visible") {
+    if (aboutToUnsubscribe) {
+      clearTimeout(unsubscribeTimeout);
+      aboutToUnsubscribe = false;
+    }
+  }
+
   if (document.visibilityState === "visible" && !isSocketConnected) {
-    console.log("Reconnecting Websocket... @ " + new Date().toLocaleString());
+    // console.log("Reconnecting Websocket... @ " + new Date().toLocaleString());
     startWebSocketConnection(app.product_ids);
   } else if (document.visibilityState === "visible" && !subscribed) {
     subscribe(app.product_ids, ["ticker"]);
     subscribed = true;
-    console.log(`subscribed`);
+    // console.log(`subscribed`);
   } else if (document.visibilityState !== "visible" && subscribed) {
-    unsubscribe(app.product_ids, ["ticker"]);
-    subscribed = false;
-    console.log(`UNsubscribed`);
+    unsubscribeTimeout = setTimeout(() => {
+      unsubscribe(app.product_ids, ["ticker"]);
+      subscribed = false;
+      // console.log(`UNsubscribed`);
+      aboutToUnsubscribe = false;
+    }, 60000);
+    aboutToUnsubscribe = true;
   }
 });
 
