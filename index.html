@@ -45,6 +45,15 @@
         <span
           ><input
             type="checkbox"
+            id="cb-usdt"
+            v-model="checkedAssets.USDC"
+            @change="toggleAll"
+          />
+          <label for="cb-usdt">USDT</label></span
+        >
+        <span
+          ><input
+            type="checkbox"
             id="cb-btc"
             v-model="checkedAssets.BTC"
             @change="toggleAll"
@@ -142,11 +151,10 @@
     </div>
     <div id="connection-status">&#9608;</div>
 
-    <!-- development version, includes helpful console warnings -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
-
-    <!-- production version, optimized for size and speed -->
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!-- Production CDN link -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <!-- Development CDN link -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script> -->
 
     <script src="spread.js"></script>
     <script src="index.js"></script>

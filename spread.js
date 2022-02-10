@@ -9,6 +9,7 @@ var app = new Vue({
       ALL: false,
       USD: true,
       USDC: true,
+      USDT: true,
       BTC: false,
       EUR: false,
       GBP: false,
