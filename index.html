@@ -9,11 +9,11 @@
   <body>
     <div id="app">
       <h1 class="center">
-        <span class="teal">Realtime Spread</span> &
-        <span class="teal">Volatility in 24 hour</span> of Coinbase Pro assets
+        <span class="teal">Realtime Spread</span> & <span class="teal">Volatility in 24 hour</span> of Coinbase Pro
+        assets
       </h1>
 
-      <div id="assets-filter">
+      <!-- <div id="assets-filter">
         <span><b>Filter:</b></span>
         <span
           ><input
@@ -96,14 +96,18 @@
           />
           <label for="cb-eth">ETH</label></span
         >
+      </div> -->
+
+      <div id="assets-filter">
+        <span><b>Filter:</b></span>
+        <span v-for="quote in quotes" :key="quote">
+          <label><input type="checkbox" :value="quote" v-model="checkedQuotes" /> {{quote}}</label>
+        </span>
       </div>
 
       <div id="tbl">
         <div class="tbl-header">
-          <span
-            class="pointer"
-            @click="changeSortBy('name')"
-            title="Click to sort by Product Name."
+          <span class="pointer" @click="changeSortBy('name')" title="Click to sort by Product Name."
             >Product <span v-if="sort_by == 'name'">&#x21E9;</span></span
           >
           <span
@@ -130,21 +134,17 @@
             >Polarity
             <span v-if="sort_by == 'polarity'">&#x21E9;</span>
           </span>
+          <span>Quote Volume</span>
         </div>
         <transition-group name="list" tag="div">
-          <div
-            class="tbl-item"
-            v-for="product_id in product_ids"
-            :key="product_id"
-          >
+          <div class="tbl-item" v-for="product_id in product_ids" :key="product_id">
             <span>{{ product_id }}</span>
             <span>{{ products[product_id].spread }} %</span>
             <span>{{ products[product_id].best_bid }}</span>
             <span>{{ products[product_id].volatility }} %</span>
             <span>{{ products[product_id].best_ask }}</span>
-            <span :class="poleSide(products[product_id].polarity)"
-              >{{ products[product_id].polarity }} %</span
-            >
+            <span :class="poleSide(products[product_id].polarity)">{{ products[product_id].polarity }} %</span>
+            <span>{{ getDisplayNum(products[product_id].quote_vol_24hr)}} {{product_id.split('-')[1]}}</span>
           </div>
         </transition-group>
       </div>

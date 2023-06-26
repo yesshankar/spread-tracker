@@ -30,7 +30,7 @@
   box-sizing: border-box;
   padding: 3px;
   display: grid;
-  grid-template-columns: repeat(6, minmax(100px, 1fr));
+  grid-template-columns: repeat(7, minmax(100px, 1fr));
 }
 
 #connection-status {

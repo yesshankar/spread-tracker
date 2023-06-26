@@ -1,30 +1,3 @@
-async function fetchProductsAndSubscribe() {
-  try {
-    let response = await fetch("https://api.pro.coinbase.com/products");
-    let data = await response.json();
-    let product_ids = data.map((item) => item.id);
-
-    let obj = {};
-
-    for (const product_id of product_ids) {
-      obj[product_id] = {
-        best_bid: 0,
-        best_ask: 0,
-        spread: 0,
-        volatility: 0,
-        polarity: 0,
-      };
-    }
-
-    app.products = obj;
-    app.holdedProducts = Object.assign({}, obj);
-
-    startWebSocketConnection(product_ids);
-  } catch (e) {
-    console.log(e);
-  }
-}
-
 // ############################ SOCKET CONNECTION #####################################
 
 let socket;
@@ -40,7 +13,7 @@ function startWebSocketConnection(product_ids) {
     type: "subscribe",
     channels: [
       {
-        name: "ticker",
+        name: "ticker_batch",
         product_ids,
       },
     ],
@@ -136,11 +109,16 @@ function updateData(data) {
   let low_24h = parseFloat(data.low_24h);
   let high_24h = parseFloat(data.high_24h);
   let price = parseFloat(data.price);
+  let volume_24h = parseFloat(data.volume_24h);
+
+  low_24h = low_24h == 0 ? 0.001 : low_24h; // to avoid divide by zero condition
 
   let spread = (((best_ask - best_bid) / best_bid) * 100).toFixed(2);
   let volatility = (((high_24h - low_24h) / low_24h) * 100).toFixed(2);
   let midPrice = (high_24h + low_24h) / 2;
   let midRange = high_24h - midPrice;
+
+  midRange = midRange == 0 ? 99999 : midRange;
 
   let tempObj = {};
 
@@ -149,12 +127,9 @@ function updateData(data) {
   tempObj.spread = spread;
   tempObj.volatility = volatility;
   tempObj.polarity = (((price - midPrice) / midRange) * 100).toFixed(2);
+  tempObj.quote_vol_24hr = volume_24h * price;
 
-  app.holdedProducts[data.product_id] = Object.assign(
-    {},
-    app.holdedProducts[data.product_id],
-    tempObj
-  );
+  app.holdedProducts[data.product_id] = Object.assign({}, app.holdedProducts[data.product_id], tempObj);
 }
 
 function updateConnectionStatus(con) {
@@ -167,5 +142,3 @@ function updateConnectionStatus(con) {
     div_connectionStatus.style.color = "red";
   }
 }
-
-fetchProductsAndSubscribe();

@@ -1,41 +1,27 @@
 var app = new Vue({
   el: "#app",
   data: {
+    quotes: [],
+    checkedQuotes: ["USD"],
     products: {},
     holdedProducts: {},
     ignoreNewData: false,
     sort_by: "spread",
-    checkedAssets: {
-      ALL: false,
-      USD: true,
-      USDC: true,
-      USDT: true,
-      BTC: false,
-      EUR: false,
-      GBP: false,
-      DAI: false,
-      ETH: false,
-    },
   },
   computed: {
     product_ids: function () {
       let filteredProducts = Object.keys(this.products).filter((pid) => {
         let asset = pid.split("-")[1];
-        return this.checkedAssets[asset];
+        return this.checkedQuotes.includes(asset);
+        // return this.checkedAssets[asset];
       });
 
       if (this.sort_by === "spread") {
-        return filteredProducts.sort(
-          (a, b) => this.products[b].spread - this.products[a].spread
-        );
+        return filteredProducts.sort((a, b) => this.products[b].spread - this.products[a].spread);
       } else if (this.sort_by === "volatility") {
-        return filteredProducts.sort(
-          (a, b) => this.products[b].volatility - this.products[a].volatility
-        );
+        return filteredProducts.sort((a, b) => this.products[b].volatility - this.products[a].volatility);
       } else if (this.sort_by === "polarity") {
-        return filteredProducts.sort(
-          (a, b) => this.products[b].polarity - this.products[a].polarity
-        );
+        return filteredProducts.sort((a, b) => this.products[b].polarity - this.products[a].polarity);
       } else {
         return filteredProducts.sort();
       }
@@ -48,24 +34,56 @@ var app = new Vue({
     poleSide: function (value) {
       return value >= 0 ? "green" : "red";
     },
-    toggleCheckboxes: function () {
-      for (const key in this.checkedAssets) {
-        if (this.checkedAssets.hasOwnProperty(key)) {
-          this.checkedAssets[key] = this.checkedAssets.ALL;
-        }
+    getDisplayNum: function (num) {
+      let stringNum = typeof num == "number" ? num.toFixed() : Number(num).toFixed(); // toFixed is to get rid of number after decimal.
+      if (stringNum.length > 9) {
+        return `${stringNum.slice(0, -9)}.${stringNum.slice(-9, -7)}B`;
+      } else if (stringNum.length > 6) {
+        return `${stringNum.slice(0, -6)}.${stringNum.slice(-6, -4)}M`;
+      } else if (stringNum.length > 3) {
+        return `${stringNum.slice(0, -3)}.${stringNum.slice(-3, -1)}K`;
+      } else {
+        return stringNum;
       }
-    },
-    toggleAll: function () {
-      for (const key in this.checkedAssets) {
-        if (!this.checkedAssets[key] && key != "ALL") {
-          this.checkedAssets.ALL = false;
-          return;
-        }
-      }
-      this.checkedAssets.ALL = true;
     },
   },
-  mounted: function () {
+  mounted: async function () {
+    try {
+      let response = await fetch("https://api.pro.coinbase.com/products");
+      let data = await response.json();
+      let product_ids = [];
+      let quoteCurrencies = new Set();
+
+      // let product_ids = data.map((item) => item.id);
+      for (const p of data) {
+        if (p.status == "online") {
+          product_ids.push(p.id);
+          quoteCurrencies.add(p.quote_currency);
+        }
+      }
+
+      let obj = {};
+
+      for (const product_id of product_ids) {
+        obj[product_id] = {
+          best_bid: 0,
+          best_ask: 0,
+          spread: 0,
+          volatility: 0,
+          polarity: 0,
+          quote_vol_24hr: 0,
+        };
+      }
+
+      this.products = obj;
+      this.holdedProducts = Object.assign({}, obj);
+      this.quotes = Array.from(quoteCurrencies);
+
+      startWebSocketConnection(product_ids);
+    } catch (e) {
+      console.log(e);
+    }
+
     setInterval(() => {
       this.products = Object.assign({}, this.holdedProducts);
     }, 2000);
