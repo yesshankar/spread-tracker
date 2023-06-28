@@ -9,94 +9,9 @@
   <body>
     <div id="app">
       <h1 class="center">
-        <span class="teal">Realtime Spread</span> & <span class="teal">Volatility in 24 hour</span> of Coinbase Pro
-        assets
+        <span class="teal">Realtime Spread</span> &
+        <span class="teal" @click="showChart = true">Volatility in 24 hour</span> of Coinbase Pro assets
       </h1>
-
-      <!-- <div id="assets-filter">
-        <span><b>Filter:</b></span>
-        <span
-          ><input
-            type="checkbox"
-            id="cb-all"
-            v-model="checkedAssets.ALL"
-            @change="toggleCheckboxes"
-          />
-          <label for="cb-all">All</label></span
-        >
-        <span
-          ><input
-            type="checkbox"
-            id="cb-usd"
-            v-model="checkedAssets.USD"
-            @change="toggleAll"
-          />
-          <label for="cb-usd">USD</label></span
-        >
-        <span
-          ><input
-            type="checkbox"
-            id="cb-usdc"
-            v-model="checkedAssets.USDC"
-            @change="toggleAll"
-          />
-          <label for="cb-usdc">USDC</label></span
-        >
-        <span
-          ><input
-            type="checkbox"
-            id="cb-usdt"
-            v-model="checkedAssets.USDC"
-            @change="toggleAll"
-          />
-          <label for="cb-usdt">USDT</label></span
-        >
-        <span
-          ><input
-            type="checkbox"
-            id="cb-btc"
-            v-model="checkedAssets.BTC"
-            @change="toggleAll"
-          />
-          <label for="cb-btc">BTC</label></span
-        >
-        <span
-          ><input
-            type="checkbox"
-            id="cb-eur"
-            v-model="checkedAssets.EUR"
-            @change="toggleAll"
-          />
-          <label for="cb-eur">EUR</label></span
-        >
-        <span
-          ><input
-            type="checkbox"
-            id="cb-gbp"
-            v-model="checkedAssets.GBP"
-            @change="toggleAll"
-          />
-          <label for="cb-gbp">GBP</label></span
-        >
-        <span
-          ><input
-            type="checkbox"
-            id="cb-dai"
-            v-model="checkedAssets.DAI"
-            @change="toggleAll"
-          />
-          <label for="cb-dai">DAI</label></span
-        >
-        <span
-          ><input
-            type="checkbox"
-            id="cb-eth"
-            v-model="checkedAssets.ETH"
-            @change="toggleAll"
-          />
-          <label for="cb-eth">ETH</label></span
-        >
-      </div> -->
 
       <div id="assets-filter">
         <span><b>Filter:</b></span>
@@ -134,11 +49,13 @@
             >Polarity
             <span v-if="sort_by == 'polarity'">&#x21E9;</span>
           </span>
-          <span>Quote Volume</span>
+          <span class="pointer" @click="changeSortBy('quote_vol_24hr')"
+            >Quote Volume <span v-if="sort_by == 'quote_vol_24hr'">&#x21E9;</span></span
+          >
         </div>
         <transition-group name="list" tag="div">
           <div class="tbl-item" v-for="product_id in product_ids" :key="product_id">
-            <span>{{ product_id }}</span>
+            <span @click="loadTvWidget(product_id)">{{ product_id }}</span>
             <span>{{ products[product_id].spread }} %</span>
             <span>{{ products[product_id].best_bid }}</span>
             <span>{{ products[product_id].volatility }} %</span>
@@ -147,6 +64,53 @@
             <span>{{ getDisplayNum(products[product_id].quote_vol_24hr)}} {{product_id.split('-')[1]}}</span>
           </div>
         </transition-group>
+      </div>
+
+      <div id="tv-chart" v-show="showChart">
+        <div class="close" @click="showChart = false" title="Close Chart">x</div>
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+          <div id="tradingview_79993"></div>
+          <div class="tradingview-widget-copyright">
+            <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"
+              ><span class="blue-text">Track all markets on TradingView</span></a
+            >
+          </div>
+          <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+          <script type="text/javascript">
+            let windowWidth = window.innerWidth;
+            let windowHeight = window.innerHeight;
+            let chartWidth = 1280;
+            let chartHeight = 980;
+            let hideToolBar = false;
+
+            if (windowWidth < 900) {
+              chartWidth = windowWidth - 15;
+              chartHeight = windowHeight - 200;
+              hideToolBar = true;
+            }
+            var tvWidget = new TradingView.widget({
+              width: chartWidth,
+              height: chartHeight,
+              symbol: "COINBASE:BTCUSD",
+              interval: "60",
+              timezone: "America/Chicago",
+              theme: "dark",
+              style: "1",
+              locale: "en",
+              toolbar_bg: "#f1f3f6",
+              enable_publishing: false,
+              hide_side_toolbar: hideToolBar,
+              allow_symbol_change: true,
+              studies: ["STD;Bollinger_Bands", "STD;MACD", "STD;RSI"],
+              show_popup_button: true,
+              popup_width: "1280",
+              popup_height: "1080",
+              container_id: "tradingview_79993",
+            });
+          </script>
+        </div>
+        <!-- TradingView Widget END -->
       </div>
     </div>
     <div id="connection-status">&#9608;</div>

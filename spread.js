@@ -7,6 +7,7 @@ var app = new Vue({
     holdedProducts: {},
     ignoreNewData: false,
     sort_by: "spread",
+    showChart: false,
   },
   computed: {
     product_ids: function () {
@@ -22,6 +23,8 @@ var app = new Vue({
         return filteredProducts.sort((a, b) => this.products[b].volatility - this.products[a].volatility);
       } else if (this.sort_by === "polarity") {
         return filteredProducts.sort((a, b) => this.products[b].polarity - this.products[a].polarity);
+      } else if (this.sort_by === "quote_vol_24hr") {
+        return filteredProducts.sort((a, b) => this.products[b].quote_vol_24hr - this.products[a].quote_vol_24hr);
       } else {
         return filteredProducts.sort();
       }
@@ -45,6 +48,11 @@ var app = new Vue({
       } else {
         return stringNum;
       }
+    },
+    loadTvWidget: function (pid) {
+      this.showChart = true;
+      tvWidget.options.symbol = `COINBASE:${pid.split("-").join("")}`;
+      tvWidget.reload();
     },
   },
   mounted: async function () {
