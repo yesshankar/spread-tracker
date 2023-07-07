@@ -84,11 +84,17 @@
             let chartHeight = 980;
             let hideToolBar = false;
 
-            if (windowWidth < 900) {
-              chartWidth = windowWidth - 15;
+            if (windowWidth < windowHeight && windowWidth < 800) {
+              chartWidth = windowWidth - 20;
               chartHeight = windowHeight - 200;
               hideToolBar = true;
             }
+
+            if (windowWidth > windowHeight && windowHeight < 1000) {
+              chartWidth = Math.floor((windowWidth * 75) / 100 - 20);
+              chartHeight = windowHeight - 100;
+            }
+
             var tvWidget = new TradingView.widget({
               width: chartWidth,
               height: chartHeight,
