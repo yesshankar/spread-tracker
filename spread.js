@@ -57,16 +57,17 @@ var app = new Vue({
   },
   mounted: async function () {
     try {
-      let response = await fetch("https://api.pro.coinbase.com/products");
+      let response = await fetch("https://api.coinbase.com/api/v3/brokerage/market/products");
       let data = await response.json();
+      let products = data.products;
       let product_ids = [];
       let quoteCurrencies = new Set();
 
       // let product_ids = data.map((item) => item.id);
-      for (const p of data) {
+      for (const p of products) {
         if (p.status == "online") {
-          product_ids.push(p.id);
-          quoteCurrencies.add(p.quote_currency);
+          product_ids.push(p.product_id);
+          quoteCurrencies.add(p.quote_currency_id);
         }
       }
 
