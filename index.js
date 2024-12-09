@@ -7,7 +7,8 @@ let unsubscribeTimeout = null;
 let aboutToUnsubscribe = false;
 
 function startWebSocketConnection(product_ids) {
-  socket = new WebSocket("wss://ws-feed.pro.coinbase.com");
+  // socket = new WebSocket("wss://ws-feed.pro.coinbase.com");
+  socket = new WebSocket("wss://ws-feed.exchange.coinbase.com");
 
   let subscribeMsg = {
     type: "subscribe",
